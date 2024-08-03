@@ -1,4 +1,4 @@
-package com.obolonyk.aggregator_service;
+package com.obolonyk.aggregator;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
