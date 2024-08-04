@@ -24,7 +24,7 @@ public class ApplicationExceptionHandler {
     @ExceptionHandler(InvalidTradeRequestException.class)
     public ProblemDetail handleException(InvalidTradeRequestException exception){
         return problemDetailBuilder(HttpStatus.BAD_REQUEST, exception, problem -> {
-            problem.setType(URI.create("http://example.com/invalid-trade-request "));
+            problem.setType(URI.create("http://example.com/invalid-trade-request"));
             problem.setTitle("Invalid trade request");
         } );
     }

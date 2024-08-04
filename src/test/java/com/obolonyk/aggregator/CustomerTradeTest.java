@@ -20,7 +20,32 @@ public class CustomerTradeTest extends AbstractIntegrationTest {
 
     @Test
     public void tradeSuccess(){
+        mockCustomerTrade("customer-service/customer-trade-200.json", 200);
 
+        var tradeReq = new TradeRequest(Ticker.GOOGLE, TradeAction.BUY, 2);
+        postTradeReq(tradeReq, HttpStatus.OK)
+                //{"customerId":1,"ticker":"GOOGLE","price":110,"quantity":2,"action":"BUY","totalPrice":220,"balance":9780}
+                .jsonPath("$.balance").isEqualTo(9780)
+                .jsonPath("$.totalPrice").isEqualTo(220)
+                .jsonPath("$.action").isEqualTo("BUY")
+                .jsonPath("$.quantity").isEqualTo(2)
+                .jsonPath("$.price").isEqualTo(110)
+                .jsonPath("$.ticker").isEqualTo("GOOGLE");
+
+    }
+
+    @Test
+    public void tradeNotSuccess(){
+        mockCustomerTrade("customer-service/customer-trade-400.json", 400);
+
+        var tradeReq = new TradeRequest(Ticker.GOOGLE, TradeAction.BUY, 2);
+        postTradeReq(tradeReq, HttpStatus.BAD_REQUEST)
+                //{"customerId":1,"ticker":"GOOGLE","price":110,"quantity":2,"action":"BUY","totalPrice":220,"balance":9780}
+                .jsonPath("$.detail").isEqualTo("Customer ID 1 does not have enough shares to complete transaction");
+
+    }
+
+    private void mockCustomerTrade(String path, int responseCode){
         //mock stock-service price response
         var responseBody = resourceToString("stock-service/stock-price-200.json");
         mockServerClient.when(HttpRequest.request("/stock/GOOGLE"))
@@ -32,23 +57,19 @@ public class CustomerTradeTest extends AbstractIntegrationTest {
                                 .withContentType(MediaType.APPLICATION_JSON)
                 );
 
-        var responseBodyTrade = resourceToString("customer-service/customer-trade-200.json");
+        //mock customer-service trade response
+
+        var responseBodyTrade = resourceToString(path);
         mockServerClient.when(
-                HttpRequest.request("/customers/1/trade")
-                        .withMethod("POST")
-                        .withBody(RegexBody.regex(".*\"price\":110.*"))
-        )
+                        HttpRequest.request("/customers/1/trade")
+                                .withMethod("POST")
+                                .withBody(RegexBody.regex(".*\"price\":110.*"))
+                )
                 .respond(
                         HttpResponse.response(responseBodyTrade)
-                                .withStatusCode(200)
+                                .withStatusCode(responseCode)
                                 .withContentType(MediaType.APPLICATION_JSON)
                 );
-
-
-        var tradeReq = new TradeRequest(Ticker.GOOGLE, TradeAction.BUY, 2);
-
-        postTradeReq(tradeReq, HttpStatus.OK);
-
     }
 
     private WebTestClient.BodyContentSpec postTradeReq(TradeRequest tradeRequest, HttpStatus expectedStatus) {
