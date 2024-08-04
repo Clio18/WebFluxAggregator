@@ -1,6 +1,8 @@
 package com.obolonyk.aggregator;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.mockserver.client.MockServerClient;
+import org.mockserver.configuration.ConfigurationProperties;
 import org.mockserver.springtest.MockServerTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -22,4 +24,9 @@ public abstract class AbstractIntegrationTest {
 
     @Autowired
     protected WebTestClient client;
+
+    @BeforeAll
+    static void setUp(){
+        ConfigurationProperties.disableLogging(true);
+    }
 }
