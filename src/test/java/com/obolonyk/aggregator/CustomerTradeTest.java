@@ -40,8 +40,23 @@ public class CustomerTradeTest extends AbstractIntegrationTest {
 
         var tradeReq = new TradeRequest(Ticker.GOOGLE, TradeAction.BUY, 2);
         postTradeReq(tradeReq, HttpStatus.BAD_REQUEST)
-                //{"customerId":1,"ticker":"GOOGLE","price":110,"quantity":2,"action":"BUY","totalPrice":220,"balance":9780}
                 .jsonPath("$.detail").isEqualTo("Customer ID 1 does not have enough shares to complete transaction");
+
+    }
+
+    @Test
+    public void validation(){
+        var missingTickerReq = new TradeRequest(null, TradeAction.BUY, 2);
+        postTradeReq(missingTickerReq, HttpStatus.BAD_REQUEST)
+                .jsonPath("$.detail").isEqualTo("Ticker is required!");
+
+        var missingTradeActionReq = new TradeRequest(Ticker.GOOGLE, null, 2);
+        postTradeReq(missingTradeActionReq, HttpStatus.BAD_REQUEST)
+                .jsonPath("$.detail").isEqualTo("Trade action is required!");
+
+        var invalidQuantityReq = new TradeRequest(Ticker.GOOGLE, TradeAction.BUY, -2);
+        postTradeReq(invalidQuantityReq, HttpStatus.BAD_REQUEST)
+                .jsonPath("$.detail").isEqualTo("Quantity should be > 0!");
 
     }
 
