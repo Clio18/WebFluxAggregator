@@ -6,7 +6,8 @@ public class ApplicationExceptionsFactory {
     public static <T> Mono<T> notFound(Integer id){
         return Mono.error(new CustomerNotFoundException(id));
     }
-    public static <T> Mono<T> validation(String message){
+
+    public static <T> Mono<T> invalidTradeRequest(String message){
         return Mono.error(new InvalidTradeRequestException(message));
     }
     
