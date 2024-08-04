@@ -1,5 +1,6 @@
 package com.obolonyk.aggregator;
 
+import org.mockserver.client.MockServerClient;
 import org.mockserver.springtest.MockServerTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
@@ -17,7 +18,7 @@ public abstract class AbstractIntegrationTest {
     // use protected because it will be extending
 
     // it set by @MockServerTest automatically
-    protected MockServerTest mockServerTest;
+    protected MockServerClient mockServerClient;
 
     @Autowired
     protected WebTestClient client;
