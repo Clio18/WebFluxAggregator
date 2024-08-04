@@ -16,12 +16,9 @@ public class CustomerInformationTest extends AbstractIntegrationTest {
     @Test
     public void customerInformation() {
         // mock customer service
-        var responseBody = """
-                {
-                "name":"sam"
-                }
-                """;
-        mockServerClient.when(HttpRequest.request("/customers/1 "))
+        var responseBody = resourceToString("customer-service/customer-info-200.json");
+
+        mockServerClient.when(HttpRequest.request("/customers/1"))
                 .respond(
                         HttpResponse.response(responseBody)
                                 .withStatusCode(200)
